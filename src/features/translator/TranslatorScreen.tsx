@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Confidence,
   ExchangeLanguage,
@@ -8,8 +8,19 @@ import {
   TextCounter,
   TextInput,
 } from "lib/components";
+import { useSupportedLanguages } from "./useSupportedLanguages";
 
 export const TranslatorScreen: React.FunctionComponent = () => {
+  const {
+    isLoading,
+    hasError,
+    fetch: getSupportedLanguages,
+  } = useSupportedLanguages((languages) => console.log(languages));
+
+  useEffect(() => {
+    getSupportedLanguages();
+  }, []);
+
   return (
     <Container>
       <TranslatorContainer>
