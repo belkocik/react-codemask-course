@@ -10,5 +10,15 @@ export type Dictionary = {
       flatIcons: string;
       libreTranslate: string;
     };
+    message: {
+      tryAgain: string;
+    };
+  };
+  screen: {
+    translator: {
+      loading: string;
+      error: string;
+      empty: string;
+    };
   };
 };
