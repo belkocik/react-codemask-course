@@ -4,4 +4,5 @@ export const APP_CONFIG = {
   FLATICON_URL: "https://github.com/bubuq3",
   LIBRE_TRANSLATE_URL: "https://github.com/bubuq3",
   API_URL: "https://libretranslate.com",
+  TEXT_INPUT_LIMIT: 5000,
 };

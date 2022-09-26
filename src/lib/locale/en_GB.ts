@@ -3,9 +3,14 @@ import { Dictionary } from "lib/types";
 export const en_GB: Dictionary = {
   common: {
     autoTranslate: "Auto Translate",
+    companyName: "Codemask Academy",
   },
-  companyName: "Codemask Academy",
   components: {
+    app: {
+      loading: "fetching supported languages",
+      error: "Something went wrong...",
+      empty: "No supported language",
+    },
     header: {
       github: "Github",
       discord: "Discord",
@@ -19,11 +24,9 @@ export const en_GB: Dictionary = {
       tryAgain: "Try again",
     },
   },
-  screen: {
+  screens: {
     translator: {
-      loading: "fetching supported languages",
-      error: "Something went wrong...",
-      empty: "No supported language",
+      sourceInputPlaceholder: "Type here text...",
     },
   },
 };

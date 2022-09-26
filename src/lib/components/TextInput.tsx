@@ -1,8 +1,40 @@
-import React from "react";
+import React, { TextareaHTMLAttributes, useEffect } from "react";
 import styled from "styled-components";
 
-export const TextInput = () => {
-  return <Input placeholder="text here" />;
+type TextInputProps = {
+  value?: string;
+  disabled?: boolean;
+  autoFocus?: boolean;
+  placeholder?: string;
+  onChangeText?(text: string): void;
+};
+
+export const TextInput: React.FunctionComponent<TextInputProps> = ({
+  autoFocus,
+  disabled,
+  placeholder,
+  value,
+  onChangeText,
+}) => {
+  const inputRef = React.createRef<HTMLTextAreaElement>();
+  useEffect(() => {
+    if (!disabled && autoFocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+  return (
+    <Input
+      value={value}
+      ref={inputRef}
+      disabled={disabled}
+      placeholder={disabled ? undefined : placeholder}
+      onChange={(event) => {
+        if (onChangeText) {
+          onChangeText(event.target.value);
+        }
+      }}
+    />
+  );
 };
 
 const Input = styled.textarea`

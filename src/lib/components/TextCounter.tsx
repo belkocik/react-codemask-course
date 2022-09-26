@@ -1,8 +1,20 @@
 import React from "react";
 import styled from "styled-components";
 
-export const TextCounter = () => {
-  return <Counter>0/5000</Counter>;
+type TextCounterProps = {
+  counter: number;
+  limit: number;
+};
+
+export const TextCounter: React.FunctionComponent<TextCounterProps> = ({
+  counter,
+  limit,
+}) => {
+  return (
+    <Counter>
+      {counter}/{limit}
+    </Counter>
+  );
 };
 
 const Counter = styled.div`
