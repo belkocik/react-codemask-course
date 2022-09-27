@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import React, { useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 import {
   Confidence,
   ExchangeLanguage,
@@ -8,10 +9,11 @@ import {
   TextCounter,
   TextInput,
 } from "lib/components";
-import { Language, LanguageCode } from "lib/models";
+import { AutoDetectedLanguage, Language, LanguageCode } from "lib/models";
 import { SelectedLanguages } from "./types";
 import { useTranslations } from "lib/hooks";
 import { APP_CONFIG } from "lib/config";
+import { useAutoDetectedLanguage } from "./actions";
 
 type TranslatorScreenProps = {
   languages: Array<Language>;
@@ -24,8 +26,28 @@ export const TranslatorScreen: React.FunctionComponent<
     { source: LanguageCode.Auto, target: LanguageCode.English }
   );
   const [query, setQuery] = useState<string>("");
+  const [autoDetectedLanguage, setAutoDetectedLanguage] =
+    useState<AutoDetectedLanguage>({
+      confidence: 70,
+      language: LanguageCode.Chinese,
+    }); // initial value is `undefined` is the braceles are empty
   const T = useTranslations();
-  console.count("translator screen rendered");
+
+  const {
+    isLoading: isDetectingLanguage,
+    hasError: hasErrorDetectingLanguage,
+    fetch: autoDetectLanguage,
+  } = useAutoDetectedLanguage(setAutoDetectedLanguage);
+
+  const debouncedAutoDetectLanguage = useDebouncedCallback((debouncedQuery) => {
+    if (debouncedQuery.length < 5) {
+      return;
+    }
+    if (selectedLanguages.source === LanguageCode.Auto) {
+      autoDetectLanguage(debouncedQuery);
+    }
+  }, 1000);
+
   return (
     <Container>
       <TranslatorContainer>
@@ -45,17 +67,35 @@ export const TranslatorScreen: React.FunctionComponent<
             autoFocus
             value={query}
             onChangeText={(newQuery) => {
-              if (newQuery.length <= APP_CONFIG.TEXT_INPUT_LIMIT) {
-                setQuery(newQuery);
+              if (newQuery.length > APP_CONFIG.TEXT_INPUT_LIMIT) {
+                return;
               }
+
+              setQuery(newQuery);
+              debouncedAutoDetectLanguage(newQuery);
             }}
             placeholder={T.screens.translator.sourceInputPlaceholder}
           />
-          <LoaderContainer>
-            <Loader />
-          </LoaderContainer>
+          {isDetectingLanguage && (
+            <LoaderContainer>
+              {isDetectingLanguage && <Loader />}
+            </LoaderContainer>
+          )}
           <InputFooter>
-            <Confidence />
+            <Confidence
+              hasError={
+                hasErrorDetectingLanguage &&
+                selectedLanguages.source === LanguageCode.Auto
+              }
+              autoDetectedLanguage={autoDetectedLanguage}
+              onClick={() => {
+                setSelectedLanguages((prevState) => ({
+                  ...prevState,
+                  source: autoDetectedLanguage?.language as LanguageCode,
+                }));
+                setAutoDetectedLanguage(undefined);
+              }}
+            />
             <TextCounter
               counter={query.length}
               limit={APP_CONFIG.TEXT_INPUT_LIMIT}
@@ -114,6 +154,7 @@ const InputContainer = styled.div`
 
 const LoaderContainer = styled.div`
   padding: 5px 10px;
+  height: 2px;
 `;
 
 const InputFooter = styled.div`
