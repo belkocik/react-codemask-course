@@ -9,4 +9,7 @@ export const theme: AppTheme = {
     typography: "#c8d6e5",
     input: "#484748",
   },
+  media: {
+    sm: 992,
+  },
 };
